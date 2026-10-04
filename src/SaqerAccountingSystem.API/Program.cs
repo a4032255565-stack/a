@@ -24,6 +24,9 @@ builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<ISaleInvoiceService, SaleInvoiceService>();
 builder.Services.AddScoped<IPurchaseInvoiceService, PurchaseInvoiceService>();
+builder.Services.AddScoped<ITransactionJournalService, TransactionJournalService>();
+builder.Services.AddScoped<IAccountBalanceService, AccountBalanceService>();
+builder.Services.AddScoped<IFinancialReportService, FinancialReportService>();
 
 var app = builder.Build();
 

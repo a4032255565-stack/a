@@ -27,6 +27,10 @@ public class ApplicationDbContext : DbContext
     public DbSet<SaleInvoiceLine> SaleInvoiceLines => Set<SaleInvoiceLine>();
     public DbSet<PurchaseInvoice> PurchaseInvoices => Set<PurchaseInvoice>();
     public DbSet<PurchaseInvoiceLine> PurchaseInvoiceLines => Set<PurchaseInvoiceLine>();
+    public DbSet<TransactionJournal> TransactionJournals => Set<TransactionJournal>();
+    public DbSet<TransactionJournalLine> TransactionJournalLines => Set<TransactionJournalLine>();
+    public DbSet<AccountBalance> AccountBalances => Set<AccountBalance>();
+    public DbSet<FinancialReport> FinancialReports => Set<FinancialReport>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -145,5 +149,35 @@ public class ApplicationDbContext : DbContext
             .WithMany()
             .HasForeignKey(l => l.ItemId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TransactionJournal>()
+            .HasOne(t => t.Company)
+            .WithMany()
+            .HasForeignKey(t => t.CompanyId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TransactionJournal>()
+            .HasMany(t => t.Lines)
+            .WithOne(l => l.TransactionJournal)
+            .HasForeignKey(l => l.TransactionJournalId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TransactionJournalLine>()
+            .HasOne(l => l.Account)
+            .WithMany()
+            .HasForeignKey(l => l.AccountId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<AccountBalance>()
+            .HasOne(b => b.Account)
+            .WithMany()
+            .HasForeignKey(b => b.AccountId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<FinancialReport>()
+            .HasOne(f => f.Company)
+            .WithMany()
+            .HasForeignKey(f => f.CompanyId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
