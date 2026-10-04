@@ -11,22 +11,60 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<Company> Companies => Set<Company>();
+    public DbSet<Branch> Branches => Set<Branch>();
+    public DbSet<UserAccount> UserAccounts => Set<UserAccount>();
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<Supplier> Suppliers => Set<Supplier>();
+    public DbSet<Item> Items => Set<Item>();
+    public DbSet<Invoice> Invoices => Set<Invoice>();
+    public DbSet<InvoiceLine> InvoiceLines => Set<InvoiceLine>();
     public DbSet<JournalEntry> JournalEntries => Set<JournalEntry>();
     public DbSet<JournalEntryLine> JournalEntryLines => Set<JournalEntryLine>();
-    public DbSet<Invoice> Invoices => Set<Invoice>();
+    public DbSet<InventoryMovement> InventoryMovements => Set<InventoryMovement>();
+    public DbSet<Payment> Payments => Set<Payment>();
+    public DbSet<SaleInvoice> SaleInvoices => Set<SaleInvoice>();
+    public DbSet<SaleInvoiceLine> SaleInvoiceLines => Set<SaleInvoiceLine>();
+    public DbSet<PurchaseInvoice> PurchaseInvoices => Set<PurchaseInvoice>();
+    public DbSet<PurchaseInvoiceLine> PurchaseInvoiceLines => Set<PurchaseInvoiceLine>();
+    public DbSet<TransactionJournal> TransactionJournals => Set<TransactionJournal>();
+    public DbSet<TransactionJournalLine> TransactionJournalLines => Set<TransactionJournalLine>();
+    public DbSet<AccountBalance> AccountBalances => Set<AccountBalance>();
+    public DbSet<FinancialReport> FinancialReports => Set<FinancialReport>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Branch>()
+            .HasOne(b => b.Company)
+            .WithMany()
+            .HasForeignKey(b => b.CompanyId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<UserAccount>()
+            .HasOne(u => u.Company)
+            .WithMany()
+            .HasForeignKey(u => u.CompanyId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Item>()
+            .HasOne(i => i.Company)
+            .WithMany()
+            .HasForeignKey(i => i.CompanyId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Account>()
             .HasOne(a => a.ParentAccount)
             .WithMany()
             .HasForeignKey(a => a.ParentAccountId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Account>()
+            .HasOne(a => a.Company)
+            .WithMany()
+            .HasForeignKey(a => a.CompanyId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<JournalEntry>()
             .HasMany(e => e.Lines)
@@ -45,5 +83,101 @@ public class ApplicationDbContext : DbContext
             .WithMany()
             .HasForeignKey(i => i.SupplierId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<InvoiceLine>()
+            .HasOne(l => l.Invoice)
+            .WithMany()
+            .HasForeignKey(l => l.InvoiceId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<InvoiceLine>()
+            .HasOne(l => l.Item)
+            .WithMany()
+            .HasForeignKey(l => l.ItemId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<InventoryMovement>()
+            .HasOne(m => m.Item)
+            .WithMany()
+            .HasForeignKey(m => m.ItemId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<InventoryMovement>()
+            .HasOne(m => m.Branch)
+            .WithMany()
+            .HasForeignKey(m => m.BranchId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Payment>()
+            .HasOne(p => p.Invoice)
+            .WithMany()
+            .HasForeignKey(p => p.InvoiceId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<SaleInvoice>()
+            .HasOne(s => s.Customer)
+            .WithMany()
+            .HasForeignKey(s => s.CustomerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<SaleInvoice>()
+            .HasMany(s => s.Lines)
+            .WithOne(l => l.SaleInvoice)
+            .HasForeignKey(l => l.SaleInvoiceId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<SaleInvoiceLine>()
+            .HasOne(l => l.Item)
+            .WithMany()
+            .HasForeignKey(l => l.ItemId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<PurchaseInvoice>()
+            .HasOne(p => p.Supplier)
+            .WithMany()
+            .HasForeignKey(p => p.SupplierId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<PurchaseInvoice>()
+            .HasMany(p => p.Lines)
+            .WithOne(l => l.PurchaseInvoice)
+            .HasForeignKey(l => l.PurchaseInvoiceId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<PurchaseInvoiceLine>()
+            .HasOne(l => l.Item)
+            .WithMany()
+            .HasForeignKey(l => l.ItemId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TransactionJournal>()
+            .HasOne(t => t.Company)
+            .WithMany()
+            .HasForeignKey(t => t.CompanyId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TransactionJournal>()
+            .HasMany(t => t.Lines)
+            .WithOne(l => l.TransactionJournal)
+            .HasForeignKey(l => l.TransactionJournalId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TransactionJournalLine>()
+            .HasOne(l => l.Account)
+            .WithMany()
+            .HasForeignKey(l => l.AccountId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<AccountBalance>()
+            .HasOne(b => b.Account)
+            .WithMany()
+            .HasForeignKey(b => b.AccountId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<FinancialReport>()
+            .HasOne(f => f.Company)
+            .WithMany()
+            .HasForeignKey(f => f.CompanyId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

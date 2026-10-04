@@ -1,23 +1,43 @@
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SaqerAccountingSystem.Application.Interfaces;
+using SaqerAccountingSystem.Application.Services;
+using SaqerAccountingSystem.Infrastructure.Data;
 
-namespace SaqerAccountingSystem.API.Controllers;
+var builder = WebApplication.CreateBuilder(args);
 
-[ApiController]
-[Route("api/[controller]")]
-public class ReportsController : ControllerBase
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddScoped<IAccountingService, AccountingService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<ISupplierService, SupplierService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<IBranchService, BranchService>();
+builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<IInventoryService, InventoryService>();
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<ISaleInvoiceService, SaleInvoiceService>();
+builder.Services.AddScoped<IPurchaseInvoiceService, PurchaseInvoiceService>();
+builder.Services.AddScoped<ITransactionJournalService, TransactionJournalService>();
+builder.Services.AddScoped<IAccountBalanceService, AccountBalanceService>();
+builder.Services.AddScoped<IFinancialReportService, FinancialReportService>();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
 {
-    private readonly IReportService _reportService;
-
-    public ReportsController(IReportService reportService)
-    {
-        _reportService = reportService;
-    }
-
-    [HttpGet("dashboard")]
-    public async Task<IActionResult> GetDashboard()
-    {
-        var summary = await _reportService.GetDashboardAsync();
-        return Ok(summary);
-    }
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
