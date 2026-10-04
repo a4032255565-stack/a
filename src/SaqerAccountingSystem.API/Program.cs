@@ -18,6 +18,8 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<IBranchService, BranchService>();
+builder.Services.AddScoped<IItemService, ItemService>();
 
 var app = builder.Build();
 
