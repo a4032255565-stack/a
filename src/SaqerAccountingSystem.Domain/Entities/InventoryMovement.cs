@@ -1,13 +1,11 @@
 namespace SaqerAccountingSystem.Domain.Entities;
 
-public class InventoryMovement : BaseEntity
+public class Payment : BaseEntity
 {
-    public int ItemId { get; set; }
-    public Item? Item { get; set; }
-    public int BranchId { get; set; }
-    public Branch? Branch { get; set; }
-    public int Quantity { get; set; }
-    public string MovementType { get; set; } = "In"; // In, Out, Adjustment
-    public string Reason { get; set; } = string.Empty;
-    public DateTime MovementDate { get; set; } = DateTime.UtcNow;
+    public int InvoiceId { get; set; }
+    public Invoice? Invoice { get; set; }
+    public decimal Amount { get; set; }
+    public string PaymentMethod { get; set; } = "Cash";
+    public DateTime PaymentDate { get; set; } = DateTime.UtcNow;
+    public string ReferenceNo { get; set; } = string.Empty;
 }

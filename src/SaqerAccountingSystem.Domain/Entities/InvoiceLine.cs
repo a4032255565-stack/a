@@ -1,13 +1,12 @@
 namespace SaqerAccountingSystem.Domain.Entities;
 
-public class InvoiceLine : BaseEntity
+public class UserAccount : BaseEntity
 {
-    public int InvoiceId { get; set; }
-    public Invoice? Invoice { get; set; }
-    public int ItemId { get; set; }
-    public Item? Item { get; set; }
-    public int Quantity { get; set; }
-    public decimal UnitPrice { get; set; }
-    public decimal Total { get; set; }
-    public string Description { get; set; } = string.Empty;
+    public string UserName { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
+    public string Role { get; set; } = "User";
+    public int CompanyId { get; set; }
+    public Company? Company { get; set; }
 }

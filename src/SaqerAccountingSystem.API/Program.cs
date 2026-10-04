@@ -1,36 +1,23 @@
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using SaqerAccountingSystem.Application.Interfaces;
-using SaqerAccountingSystem.Application.Services;
-using SaqerAccountingSystem.Infrastructure.Data;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace SaqerAccountingSystem.API.Controllers;
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddScoped<ICompanyService, CompanyService>();
-builder.Services.AddScoped<IAccountingService, AccountingService>();
-builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<ISupplierService, SupplierService>();
-builder.Services.AddScoped<IInvoiceService, InvoiceService>();
-builder.Services.AddScoped<IBranchService, BranchService>();
-builder.Services.AddScoped<IItemService, ItemService>();
-
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
+[ApiController]
+[Route("api/[controller]")]
+public class ReportsController : ControllerBase
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    private readonly IReportService _reportService;
+
+    public ReportsController(IReportService reportService)
+    {
+        _reportService = reportService;
+    }
+
+    [HttpGet("dashboard")]
+    public async Task<IActionResult> GetDashboard()
+    {
+        var summary = await _reportService.GetDashboardAsync();
+        return Ok(summary);
+    }
 }
-
-app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
-
-app.Run();
